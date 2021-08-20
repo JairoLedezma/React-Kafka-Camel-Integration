@@ -14,12 +14,12 @@ pipeline {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                            def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template.yml", "--param-file=./ReactApp/pipeline/ui.env", "-p", ("PROJECT_UID=" + PROJECT_NAME))
+                            def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template.yml", "--param-file=./ReactApp/pipeline/ui.env", "-p", ("PROJECT_UID=" + PROJECT_NAME), "-p", ("PREFIX=" + BUILD_PREFIX))
                             try {
                                 def createResources = openshift.create( processedTemplate )
-                                createResources.logs(-f)
+                                createResources.logs('-f')
                                 def replaceResources = openshift.replace( processedTemplate )
-                                replaceResources.logs(-f)
+                                replaceResources.logs('-f')
                             } catch (err) {
                                 echo err.getMessage()
                             }
