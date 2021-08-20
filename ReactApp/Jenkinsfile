@@ -4,12 +4,31 @@ pipeline {
         oc 'oc'
     }
     stages {
-        stage ('Building UI-Build') {
+        stage('Fetching Git Repository') {
+            steps {
+                git url: GIT_URL, branch: BRANCH
+            }
+        }
+        stage ('Create Configurations') {
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_CONFIG + "-build" )
+                            sh "cd ReactApp"
+                            def processedTemplate = openshift.process( "-f", "./pipeline/ui-template.yaml", "--param-file=./pipeline/ui.env", "-p", PROJECT_NAME)
+                            def createResources = openshift.create( processedTemplate )
+                            def replaceResources = openshift.create( processedTemplate )
+                        }
+                    }
+                }
+            }
+        }
+        stage ('UI-Build') {
+            steps {
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-build" )
                             buildConfig.startBuild()
                             buildConfig.logs('-f')
                         }
@@ -17,12 +36,12 @@ pipeline {
                 }    
             }
         }
-        stage ('Building UI-Runtime') {
+        stage ('UI-Runtime Build') {
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_CONFIG + "-runtime" )
+                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-runtime" )
                             buildConfig.startBuild()
                             buildConfig.logs('-f')
                         }
@@ -35,7 +54,7 @@ pipeline {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                            def devConfig = openshift.selector( 'deploymentconfig/' + DEPLOYMENT_CONFIG )
+                            def devConfig = openshift.selector( 'deploymentconfig/' + BUILD_PREFIX + "-ui-deploy" )
                             devConfig.rollout().latest()
                         }
                     }

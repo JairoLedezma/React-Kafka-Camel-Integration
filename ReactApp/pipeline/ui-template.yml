@@ -1,0 +1,255 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: ui-template
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: '${PREFIX}-ui-build'
+      namespace: '${PROJECT_UID}'  
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: '${PREFIX}-ui-runtime'
+      namespace: '${PROJECT_UID}'      
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: '${PREFIX}-ui-build'
+      namespace: '${PROJECT_UID}'
+      annotations:
+        description: This Build config is to clone the source code and build the UI build 
+    spec:
+      source: 
+        type: Git
+        git:
+          uri: '${SOURCE_REPOSITORY_URL}' 
+          ref: '${SOURCE_REPOSITORY_REF}'
+        contextDir: '${CONTEXT_DIR}'
+      strategy:
+        sourceStrategy:
+          env:
+            - name: 'NPM_BUILD'
+              value: '${BUILD_COMMAND}'
+          from:
+            kind: ImageStreamTag
+            name: 'nodejs:latest'
+            namespace: openshift
+        type: Source
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${PREFIX}-ui-build:latest'
+      triggers:
+        - type: "Bitbucket"
+          bitbucket:
+           secretReference:
+            name: "${BITBUCKET_WEBHOOK_SECRET}"
+      successfulBuildsHistoryLimit: 2
+      failedBuildsHistoryLimit: 2
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: '${PREFIX}-ui-runtime'
+      namespace: '${PROJECT_UID}'
+      annotations:
+        description: This Build config is to prepare an image with nginx webserver which will be ready to run.
+    spec:
+       source:
+        images:
+          - as: null
+            from:
+              kind: ImageStreamTag
+              name: '${PREFIX}-ui-build:latest'
+              namespace: '${PROJECT_UID}'              
+            paths:
+              - destinationDir: ./
+                sourcePath: /opt/app-root/src/build/.
+        type: Image
+       strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: 'nginx:latest'
+            namespace: openshift
+        type: Source
+       output:
+        to:
+          kind: ImageStreamTag
+          name: '${PREFIX}-ui-runtime:latest'
+       successfulBuildsHistoryLimit: 2
+       failedBuildsHistoryLimit: 2
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: '${PREFIX}-ui-deploy'
+      namespace: '${PROJECT_UID}'
+      annotations:
+        description: This Deploy config is to deploy nginx webserver along with the build code onto pods.
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: '${PREFIX}-ui'
+        spec:
+          containers:
+            - image: '${PREFIX}-ui-runtime:latest'
+              imagePullPolicy: Always
+              name: '${PREFIX}-ui-deploy-container'
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+                - containerPort: 8443
+                  protocol: TCP
+              resources: 
+                limits:
+                  cpu: '${CPU_REQUEST_LIMIT}'
+                  memory: '${MEMORY_REQUEST_LIMIT}'
+                requests:
+                  cpu: '${CPU_REQUEST_MINIMUM}'
+                  memory: '${MEMORY_REQUEST_MINIMUM}'    
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: false
+            containerNames:
+              - '${PREFIX}-ui-deploy-container'
+            from:
+              kind: ImageStreamTag
+              name: '${PREFIX}-ui-runtime:latest'
+          type: ImageChange
+  - kind: 'Service' 
+    apiVersion: 'v1'
+    metadata:
+      name: '${PREFIX}-ui-service'
+      annotations:
+        description: 'Exposes and load balances the application pods'
+    spec:
+      ports:
+        - name: 'ui'
+          port: 8080
+          targetPort: 8080
+      selector:
+        app: '${PREFIX}-ui'
+  - apiVersion: v1
+    kind: Route
+    metadata:
+     name: '${PREFIX}-ui'
+    spec:
+     host: '${HOST_NAME}'
+     path: "/" 
+     to:
+      kind: Service
+      name: '${PREFIX}-ui-service'
+     tls:
+      termination: edge      
+      insecureEdgeTerminationPolicy: Redirect
+  - apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: '${PREFIX}-autoscaling-cpu-based' 
+    spec:
+      scaleTargetRef:
+        apiVersion: v1 
+        kind: DeploymentConfig 
+        name: '${PREFIX}-ui-deploy' 
+      minReplicas: 1 
+      maxReplicas:  '${{MAX_PODS}}'
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          targetAverageUtilization: '${{MAX_CPU}}' 
+parameters:
+  - name: SOURCE_REPOSITORY_URL 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your application source code 
+    required: true 
+  - name: SOURCE_REPOSITORY_REF 
+    displayName: Source Repository Branch 
+    description: Branch name in the repository with your application source code 
+    required: true
+  - name: CONTEXT_DIR 
+    displayName: Source Repository Context Dir 
+    description: Context directory in the repository with your application source code 
+    required: true
+  - name: BUILD_COMMAND
+    displayName: Build Command (environment specific)
+    description: Command to generate the build files (ex - npm run build:dev to generate development build)
+    required: true
+  - name: OUTPUT_DIR
+    displayName: Build Output Directory
+    description: Output directory for the build to go into 
+    value: ./build
+  - name: BITBUCKET_WEBHOOK_SECRET
+    description: A secret string used to configure the GitHub webhook
+    generate: expression 
+    from: '[a-zA-Z0-9]{40}' 
+  - name: REPLICA_COUNT
+    description: Number of replicas to run
+    value: '1'
+    required: true
+  - name: PROJECT_UID
+    displayName: Project Unique Namespace
+    description: Unique Name for the project to run the template under.
+    required: true
+  - name: SOURCE_SECRET
+    displayName: Source Secret to connect Git
+    description: Source Secret to pull the code from Bit Bucket.
+    required: false
+  - name: BASE_PREFIX
+    displayName: Prefix for the base images
+    description: String that will be prefixed to all builds and deployments
+    required: true
+  - name: PREFIX
+    displayName: Prefix for the builds
+    description: String that will be prefixed to all builds and deployments
+    required: true
+  - name: HOST_NAME
+    displayName: Host Name (should include OCP domain suffix)
+    description: Host name for the application. It should be a fully qualified domain name including OCP domain suffix. Example from development, demoui.apps.ocp.amat.com. Leave blank to auto create host name.
+  - name: CPU_REQUEST_LIMIT
+    displayName: CPU Request Limit (in millicores)
+    description: The maximum amount of CPU the container is allowed to use when running. Leave the default if you are unsure.
+    value: '20m'
+  - name: MEMORY_REQUEST_LIMIT
+    displayName: Memory Request Limit (in MegaBytes)
+    description: The maximum amount of memory the container is allowed to use when running. Leave the default if you are unsure.
+    value: '`128Mi'
+  - name: CPU_REQUEST_MINIMUM
+    displayName: Minimum CPU Request (in millicores)
+    description: The minimum amount of CPU the container is guaranteed. Leave the default if you are unsure.
+    value: '5m'
+  - name: MEMORY_REQUEST_MINIMUM
+    displayName: Minimum Memory Request (in MegaBytes)
+    description: The minimum amount of memory the container is guaranteed. Leave the default if you are unsure.
+    value: '64Mi'
+  - name: MAX_PODS
+    displayName: Maximum Pods to AutoScale
+    description: The maximum number of pods to run when the autoscaling.
+    value: '1'
+  - name: MAX_CPU
+    displayName: CPU Utilization Threshold (%) for Auto Scaling
+    description: The percentage of the CPU request that each pod should ideally be using. Pods will be added or removed periodically when CPU usage exceeds or drops below this target value.
+    value: '80'

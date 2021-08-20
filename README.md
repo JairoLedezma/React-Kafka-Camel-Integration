@@ -31,3 +31,9 @@ The diagram shows how the applications are connected and how the data flows star
 
 - JDK 11
 - NodeJS v12.x - v14.x(preferred) with NPM
+
+### Setting up the PostgreSQL server
+
+ - Download and install the recent version of the postgreSQL server if you do not have one.
+ - set the password for postgres username as "password" for this demo or you can set it to any password and change the configuration in the camel application. Two files have to be modified
+   - A
