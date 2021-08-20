@@ -15,7 +15,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                             sh "cd ReactApp"
-                            def processedTemplate = openshift.process( "-f", "./pipeline/ui-template.yaml", "--param-file=./pipeline/ui.env", "-p", PROJECT_NAME)
+                            def processedTemplate = openshift.process( "-f", "./pipeline/ui-template.yml", "--param-file=./pipeline/ui.env", "-p", PROJECT_NAME)
                             def createResources = openshift.create( processedTemplate )
                             def replaceResources = openshift.create( processedTemplate )
                         }
