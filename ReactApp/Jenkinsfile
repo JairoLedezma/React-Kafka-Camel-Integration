@@ -17,7 +17,7 @@ pipeline {
                 }    
             }
         }
-        stage ('Building UI-Build') {
+        stage ('Building UI-Runtime') {
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
