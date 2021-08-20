@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    tools{
+        oc 'oc'
+    }
+    stages {
+        stage ('Building UI-Build') {
+            steps {
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_CONFIG + "-build" )
+                            buildConfig.startBuild()
+                            buildConfig.logs('-f')
+                        }
+                    }
+                }    
+            }
+        }
+        stage ('Building UI-Build') {
+            steps {
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_CONFIG + "-runtime" )
+                            buildConfig.startBuild()
+                            buildConfig.logs('-f')
+                        }
+                    }
+                }    
+            }
+        }
+        stage ('Deploying UI-Runtime') {
+            steps {
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                            def devConfig = openshift.selector( 'deploymentconfig/' + DEPLOYMENT_CONFIG )
+                            devConfig.rollout().latest()
+                        }
+                    }
+                }    
+            }
+        }
+    }
+}

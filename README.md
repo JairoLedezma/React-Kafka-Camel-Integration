@@ -1,6 +1,6 @@
 # React-Kafka-Camel-Integration
 
-This repository contains all the project files required to run React App with full end-to-end communication to a Back-end Service with a Kafka Message Broker in-between and a proxy server setting in between the React App and Kafka Cluster.
+This repository contains all the project files required to run React App with full end-to-end communication to a Back-end Service with a Kafka Message Broker in-between and a proxy server sitting in between the React App and Kafka Cluster.
 
 ## Table of Contents
   - [Repository Structure](#-repository-structure)
@@ -19,3 +19,15 @@ This repository contains all the project files required to run React App with fu
 
   - ReactApp:
     A React front-end application which allows end-users to send HTTP requests to the Proxy Server which processes the user requests and provides a meaningful user-interface for the users.
+
+## Project Structure
+**A high level overview of the project**
+
+![](./docs/HL-Overview.png)
+
+The diagram shows how the applications are connected and how the data flows starting from React app, top to bottom, right to left.<br /><br />
+
+## Prerequisites and Setting up the Environment
+
+- JDK 11
+- NodeJS v12.x - v14.x(preferred) with NPM
