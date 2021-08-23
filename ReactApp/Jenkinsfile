@@ -42,6 +42,9 @@ pipeline {
             }
         }
         stage ('UI-Runtime Build') {
+            options{
+                timeout(time: 2, unit: 'MINUTES')
+            }
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
