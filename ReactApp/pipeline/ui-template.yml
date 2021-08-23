@@ -3,12 +3,6 @@ apiVersion: template.openshift.io/v1
 metadata:
   name: ui-template
 objects:
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: ${QUAY_PUSH_SECRET}
-    data:
-      key:
   - kind: ImageStream
     apiVersion: v1
     metadata:
