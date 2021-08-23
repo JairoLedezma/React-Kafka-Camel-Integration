@@ -55,15 +55,6 @@ objects:
           securityContext: {}
           terminationGracePeriodSeconds: 30
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: false
-            containerNames:
-              - '${PREFIX}-ui-deploy-container'
-            from:
-              kind: ImageStreamTag
-              name: '${PREFIX}-ui-runtime:latest'
-          type: ImageChange
   - kind: 'Service' 
     apiVersion: 'v1'
     metadata:
