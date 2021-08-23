@@ -34,7 +34,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                             def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-build" )
-                            buildConfig.startBuild()
+                            buildConfig.startBuild("--wait=true")
                             buildConfig.logs('-f')
                         }
                     }
@@ -50,7 +50,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                             def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-runtime" )
-                            buildConfig.startBuild()
+                            buildConfig.startBuild("--wait=true")
                             buildConfig.logs('-f')
                         }
                     }
