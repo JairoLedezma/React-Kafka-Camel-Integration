@@ -8,6 +8,7 @@ objects:
     metadata:
       name: ${QUAY_PUSH_SECRET}
     data:
+      key:
     type: kubernetes.io/dockerconfigjson
   - kind: ImageStream
     apiVersion: v1
