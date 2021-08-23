@@ -3,7 +3,7 @@ apiVersion: template.openshift.io/v1
 metadata:
   name: ui-template
 objects:
-   - kind: DeploymentConfig
+  - kind: DeploymentConfig
     apiVersion: v1
     metadata:
       name: '${PREFIX}-ui-deploy'
