@@ -18,6 +18,10 @@ pipeline {
                             try {
                                 def createResources = openshift.create( processedTemplate )
                                 createResources.logs('-f')
+                            } catch (err) {
+                                echo err.getMessage()
+                            }
+                            try {
                                 def replaceResources = openshift.replace( processedTemplate )
                                 replaceResources.logs('-f')
                             } catch (err) {
