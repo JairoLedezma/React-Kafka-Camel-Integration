@@ -3,6 +3,14 @@ apiVersion: template.openshift.io/v1
 metadata:
   name: ui-template
 objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${QUAY_PUSH_SECRET}
+    data:
+      .dockerconfigjson:
+
+    type: kubernetes.io/dockerconfigjson
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -75,9 +83,11 @@ objects:
             namespace: openshift
         type: Source
        output:
+        pushSecret:
+          name: '${QUAY_PUSH_SECRET}'
         to:
-          kind: ImageStreamTag
-          name: '${PREFIX}-ui-runtime:latest'
+          kind: DockerImage
+          name: '{QUAY_REPO}'
        successfulBuildsHistoryLimit: 2
        failedBuildsHistoryLimit: 2
   - kind: DeploymentConfig
@@ -107,7 +117,7 @@ objects:
             app: '${PREFIX}-ui'
         spec:
           containers:
-            - image: '${PREFIX}-ui-runtime:latest'
+            - image: '${QUAY_REPO}:${QUAY_TAG}'
               imagePullPolicy: Always
               name: '${PREFIX}-ui-deploy-container'
               ports:
@@ -125,6 +135,8 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
+          imagePullSecrets:
+            - name: ${QUAY_PUSH_SECRET}
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
@@ -229,6 +241,15 @@ parameters:
   - name: HOST_NAME
     displayName: Host Name (should include OCP domain suffix)
     description: Host name for the application. It should be a fully qualified domain name including OCP domain suffix. Example from development, demoui.apps.ocp.amat.com. Leave blank to auto create host name.
+  - name: QUAY_REPO
+    displayName: Quay Repository URL
+    description: quay.io repository url to push the built image to.
+  - name: QUAY_TAG
+    displayName: Quay Repository Image Tag
+    description: quay.io repository image tag url to pull the built image from.
+  - name: QUAY_PUSH_SECRET
+    displayName: Quay Repository Push Secret
+    description: push secret for quay.io repository.
   - name: CPU_REQUEST_LIMIT
     displayName: CPU Request Limit (in millicores)
     description: The maximum amount of CPU the container is allowed to use when running. Leave the default if you are unsure.

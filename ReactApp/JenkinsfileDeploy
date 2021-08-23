@@ -28,27 +28,13 @@ pipeline {
                 }
             }
         }
-        stage ('UI-Build') {
+        stage ('Deploying UI-Runtime') {
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-build" )
-                            buildConfig.startBuild("--wait=true")
-                            buildConfig.logs('-f')
-                        }
-                    }
-                }    
-            }
-        }
-        stage ('UI-Runtime Building and Pushing Image to Quay') {
-            steps {
-                script {
-                    openshift.withCluster( CLUSTER_NAME ) {
-                        openshift.withProject( PROJECT_NAME ){
-                            def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-runtime" )
-                            buildConfig.startBuild("--wait=true")
-                            buildConfig.logs('-f')
+                            def devConfig = openshift.selector( 'deploymentconfig/' + BUILD_PREFIX + "-ui-deploy" )
+                            devConfig.rollout().latest()
                         }
                     }
                 }    

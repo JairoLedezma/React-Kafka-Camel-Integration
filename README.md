@@ -25,7 +25,7 @@ This repository contains all the project files required to run React App with fu
 
 ![](./docs/HL-Overview.png)
 
-The diagram shows how the applications are connected and how the data flows starting from React app, top to bottom, right to left.<br /><br />
+The diagram shows how the services are connected and how the data flows starting from React app, top to bottom, right to left.<br /><br />
 
 ## Prerequisites and Setting up the Environment
 
