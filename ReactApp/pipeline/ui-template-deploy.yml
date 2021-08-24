@@ -55,6 +55,11 @@ objects:
           securityContext: {}
           terminationGracePeriodSeconds: 30
       test: false
+      triggers:
+        - type: "Bitbucket"
+          bitbucket:
+           secretReference:
+            name: "${BITBUCKET_WEBHOOK_SECRET}"
   - kind: 'Service' 
     apiVersion: 'v1'
     metadata:
@@ -122,6 +127,10 @@ parameters:
   - name: QUAY_PUSH_SECRET
     displayName: Quay Repository Push Secret
     description: push secret for quay.io repository.
+  - name: BITBUCKET_WEBHOOK_SECRET
+    description: A secret string used to configure the GitHub webhook
+    generate: expression 
+    from: '[a-zA-Z0-9]{40}'
   - name: CPU_REQUEST_LIMIT
     displayName: CPU Request Limit (in millicores)
     description: The maximum amount of CPU the container is allowed to use when running. Leave the default if you are unsure.

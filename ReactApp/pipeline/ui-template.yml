@@ -200,7 +200,7 @@ parameters:
   - name: BITBUCKET_WEBHOOK_SECRET
     description: A secret string used to configure the GitHub webhook
     generate: expression 
-    from: '[a-zA-Z0-9]{40}' 
+    from: '[a-zA-Z0-9]{40}'
   - name: REPLICA_COUNT
     description: Number of replicas to run
     value: '1'
