@@ -23,10 +23,6 @@ objects:
           timeoutSeconds: 600
           updatePeriodSeconds: 1
         type: Rolling
-      triggers:
-        - type: ImageChange
-          imageChangeParams:
-            automatic: false
       template:
         metadata:
           creationTimestamp: null
