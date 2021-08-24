@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools{
         oc 'oc'
+        tools {nodejs "nodejs"}
     }
     stages {
         stage('Fetching Git Repository') {
