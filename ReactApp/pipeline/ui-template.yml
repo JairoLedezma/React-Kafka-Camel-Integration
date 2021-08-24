@@ -79,7 +79,7 @@ objects:
           name: ${QUAY_PUSH_SECRET}
         to:
           kind: DockerImage
-          name: '{QUAY_REPO}:latest'
+          name: '${QUAY_REPO}'
        successfulBuildsHistoryLimit: 2
        failedBuildsHistoryLimit: 2
   - kind: DeploymentConfig
