@@ -31,7 +31,7 @@ pipeline {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                           sh 'npm eslint -f checkstyle src > eslint.xml'
+                           sh 'npm run lint:fix'
                             
                         }
                     }
