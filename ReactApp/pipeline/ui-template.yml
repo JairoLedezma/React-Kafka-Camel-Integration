@@ -76,10 +76,10 @@ objects:
         type: Source
        output:
         pushSecret:
-          name: '${QUAY_PUSH_SECRET}'
+          name: ${QUAY_PUSH_SECRET}
         to:
           kind: DockerImage
-          name: '{QUAY_REPO}'
+          name: {QUAY_REPO}
        successfulBuildsHistoryLimit: 2
        failedBuildsHistoryLimit: 2
   - kind: DeploymentConfig
@@ -134,15 +134,6 @@ objects:
           securityContext: {}
           terminationGracePeriodSeconds: 30
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: false
-            containerNames:
-              - '${PREFIX}-ui-deploy-container'
-            from:
-              kind: ImageStreamTag
-              name: '${PREFIX}-ui-runtime:latest'
-          type: ImageChange
   - kind: 'Service' 
     apiVersion: 'v1'
     metadata:

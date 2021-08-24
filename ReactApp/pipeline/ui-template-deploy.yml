@@ -24,8 +24,9 @@ objects:
           updatePeriodSeconds: 1
         type: Rolling
       triggers:
-        - type: ConfigChange
-          automatic: false
+        - type: ImageChange
+          imageChangeParams:
+            automatic: false
       template:
         metadata:
           creationTimestamp: null
