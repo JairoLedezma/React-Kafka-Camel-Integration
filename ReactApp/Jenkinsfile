@@ -9,7 +9,7 @@ pipeline {
                 git url: GIT_URL, branch: BRANCH
             }
         }
-        stage ('Create & Replace Configurations') {
+        stage ('Create Configurations') {
             steps {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
@@ -17,6 +17,21 @@ pipeline {
                             def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template.yml", "--param-file=./ReactApp/pipeline/ui.env", "-p", ("PROJECT_UID=" + PROJECT_NAME), "-p", ("PREFIX=" + BUILD_PREFIX))
                             try {
                                 openshift.create( processedTemplate )
+                            } catch (err) {
+                                echo err.getMessage()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage ('Replace Configurations') {
+            steps {
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                            def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template.yml", "--param-file=./ReactApp/pipeline/ui.env", "-p", ("PROJECT_UID=" + PROJECT_NAME), "-p", ("PREFIX=" + BUILD_PREFIX))
+                            try {
                                 openshift.replace( processedTemplate )
                             } catch (err) {
                                 echo err.getMessage()
