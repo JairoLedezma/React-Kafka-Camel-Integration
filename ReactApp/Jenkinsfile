@@ -25,17 +25,23 @@ pipeline {
                 }
             }
         }
-        stage ('Static Analysis') {
+        stage ('Lint') {
             steps {
-               sh ' ./node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
+                script {
+                    openshift.withCluster( CLUSTER_NAME ) {
+                        openshift.withProject( PROJECT_NAME ){
+                           sh ' ./node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
+                            
+                        }
+                    }
+                }
             }
             post {
-               always {
-                   recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
+                always {
+                    recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
+                }
             }
-            }
-            }
-            }
+        }
         stage ('Replace Configurations') {
             steps {
                 script {
