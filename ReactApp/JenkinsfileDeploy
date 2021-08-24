@@ -16,14 +16,8 @@ pipeline {
                         openshift.withProject( PROJECT_NAME ){
                             def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template-deploy.yml", "--param-file=./ReactApp/pipeline/ui-deploy.env", "-p", ("PROJECT_UID=" + PROJECT_NAME), "-p", ("PREFIX=" + BUILD_PREFIX), "-p", ("QUAY_TAG=" + IMAGE_TAG))
                             try {
-                                def createResources = openshift.create( processedTemplate )
-                                createResources.logs('-f')
-                            } catch (err) {
-                                echo err.getMessage()
-                            }
-                            try {
-                                def replaceResources = openshift.replace( processedTemplate )
-                                replaceResources.logs('-f')
+                                openshift.create( processedTemplate )
+                                openshift.replace( processedTemplate )
                             } catch (err) {
                                 echo err.getMessage()
                             }

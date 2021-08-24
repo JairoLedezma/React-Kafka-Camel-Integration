@@ -16,14 +16,8 @@ pipeline {
                         openshift.withProject( PROJECT_NAME ){
                             def processedTemplate = openshift.process( "-f", "./ReactApp/pipeline/ui-template.yml", "--param-file=./ReactApp/pipeline/ui.env", "-p", ("PROJECT_UID=" + PROJECT_NAME), "-p", ("PREFIX=" + BUILD_PREFIX))
                             try {
-                                def createResources = openshift.create( processedTemplate )
-                                createResources.logs('-f')
-                            } catch (err) {
-                                echo err.getMessage()
-                            }
-                            try {
-                                def replaceResources = openshift.replace( processedTemplate )
-                                replaceResources.logs('-f')
+                                openshift.create( processedTemplate )
+                                openshift.replace( processedTemplate )
                             } catch (err) {
                                 echo err.getMessage()
                             }
@@ -38,8 +32,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                             def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-build" )
-                            buildConfig.startBuild("--wait=true")
-                            buildConfig.logs('-f')
+                            buildConfig.startBuild("--follow=true --wait=true")
                         }
                     }
                 }    
@@ -51,8 +44,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                             def buildConfig = openshift.selector( 'buildconfig/' + BUILD_PREFIX + "-ui-runtime" )
-                            buildConfig.startBuild("--wait=true")
-                            buildConfig.logs('-f')
+                            buildConfig.startBuild("--follow=true --wait=true")
                         }
                     }
                 }    
