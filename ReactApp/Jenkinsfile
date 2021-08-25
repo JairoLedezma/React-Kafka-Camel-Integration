@@ -31,10 +31,11 @@ pipeline {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
-                           sh 'npm install -g eslint'
-                           sh 'eslint --init'
+                           //sh 'npm install -g eslint'
+                           //sh 'eslint --init'
                            //sh "chmod +x ./ReactApp/eslint-script.sh"
-                           sh 'eslint --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./'
+                           sh 'eslint -c config.eslintrc -f checkstyle apps/**/* > eslint.xml'
+                           //sh 'eslint --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./'
                         }
                     }
                 }
