@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ./workspace/lint-react
+cd ./ReactApp
 
 eslint --no-color --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./
 
