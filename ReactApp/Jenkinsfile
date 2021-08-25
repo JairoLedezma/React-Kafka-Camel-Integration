@@ -32,14 +32,11 @@ pipeline {
                 sh 'npm install -g eslint'
                 sh 'eslint --init'
                 sh 'npm install eslint-plugin-react@latest --save-dev'
-                sh 'git checkout master'
                 sh 'chmod +x ./ReactApp/eslint-script.sh'
                 sh './ReactApp/eslint-script.sh'
-                sh 'git commit -am "Added lint files"'
+                    
+                //sh 'git commit -am "Added lint files"'
                 //sh 'git push http://JairoLedezma:@{REPOSITORY}.git'
-                withCredentials([usernamePassword(credentialsId: 'ci-github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@https://github.com/JairoLedezma/React-Kafka-Camel-Integration.git')
-                 }
                 }
             }
         }
