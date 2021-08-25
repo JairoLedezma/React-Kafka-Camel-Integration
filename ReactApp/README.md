@@ -68,3 +68,13 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+.  
+
+
+
+##-------------------------------------------------------------------------------------------
+## Lint stage
+
+The lint stage is called after the Create configurations stage. This saves the output of the eslint operation to a file called eslint-report. This can be found at ReactApp/reports/
+
+If you run this in a jenkins pipeline, the file will not be added back to the cloned repository. The file will be made available in the Jenkins workspace. You can find the workspace by cicking on the buildnumber > workspaces > click on workspace > ReactApp > reports > eslint-report.
