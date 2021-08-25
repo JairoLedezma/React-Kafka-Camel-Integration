@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh 'npm install -g eslint'
                 sh 'eslint --init'
-               
+                sh 'npm install eslint-plugin-react@latest --save-dev'
                 sh 'chmod +x ./ReactApp/eslint-script.sh'
                 sh './ReactApp/eslint-script.sh'
             }
