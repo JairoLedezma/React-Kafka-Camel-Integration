@@ -2,6 +2,6 @@
 
 cd ./ReactApp
 
-eslint --no-color --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./
+eslint --no-color --format json --ext .ejs,.js --output-file ./reports/eslint-report ./
 
 echo $? > /dev/null
