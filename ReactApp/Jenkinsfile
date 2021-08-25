@@ -34,7 +34,7 @@ pipeline {
                            sh 'npm install -g eslint'
                            sh 'eslint --init'
                            //sh "chmod +x ./ReactApp/eslint-script.sh"
-                           sh 'eslint -c config.eslintrc -f checkstyle ./ReactApp > eslint.xml'
+                           sh 'eslint -c .eslintrc.json -f checkstyle ./ReactApp > eslint.xml'
                            //sh 'eslint --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./'
                         }
                     }
