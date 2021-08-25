@@ -33,8 +33,9 @@ pipeline {
                         openshift.withProject( PROJECT_NAME ){
                            sh 'npm install -g eslint'
                            sh 'eslint --init'
+                           sh 'eslint ReactApp/**'
                            //sh "chmod +x ./ReactApp/eslint-script.sh"
-                           sh 'eslint -c /Users/jairoledezma/.jenkins/workspace/lint-react/ReactApp/.eslintrc.json -f checkstyle ./ReactApp > eslint.xml'
+                           //sh 'eslint -c /Users/jairoledezma/.jenkins/workspace/lint-react/ReactApp/.eslintrc.json -f checkstyle ./ReactApp > eslint.xml'
                            //sh 'eslint --format json --ext .ejs,.js --output-file ./ReactApp/reports/eslint-report ./'
                         }
                     }
