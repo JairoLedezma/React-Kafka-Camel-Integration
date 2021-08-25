@@ -36,9 +36,10 @@ pipeline {
                 sh 'chmod +x ./ReactApp/eslint-script.sh'
                 sh './ReactApp/eslint-script.sh'
                 sh 'git commit -am "Added lint files"'
-                def str='git push http://'+GITHUB_USER+':'+GITHUB_PASS+'@'+JairoLedezma/React-Kafka-Camel-Integration.git
                 //sh 'git push http://JairoLedezma:@{REPOSITORY}.git'
-                sh str
+                withCredentials([usernamePassword(credentialsId: 'ci-github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@https://github.com/JairoLedezma/React-Kafka-Camel-Integration.git')
+                 }
                 }
             }
         }
