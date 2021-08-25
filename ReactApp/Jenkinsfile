@@ -28,6 +28,7 @@ pipeline {
         }
         stage ('Lint Analysis with EsLint') {
             steps {
+                script{
                 sh 'npm install -g eslint'
                 sh 'eslint --init'
                 sh 'npm install eslint-plugin-react@latest --save-dev'
@@ -38,6 +39,7 @@ pipeline {
                 def str='git push http://'+GITHUB_USER+':'+GITHUB_PASS+'@'+GIT_URL
                 //sh 'git push http://JairoLedezma:@{REPOSITORY}.git'
                 sh str
+                }
             }
         }
         stage ('Replace Configurations') {
