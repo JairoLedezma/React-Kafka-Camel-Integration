@@ -74,7 +74,7 @@ objects:
             name: 'nginx:latest'
             namespace: openshift
         type: Source
-       output:
+        output:
         pushSecret:
           name: ${QUAY_PUSH_SECRET}
         to:
