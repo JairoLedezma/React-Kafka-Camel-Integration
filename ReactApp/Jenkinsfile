@@ -34,7 +34,7 @@ pipeline {
                 sh 'git checkout master'
                 sh 'chmod +x ./ReactApp/eslint-script.sh'
                 sh './ReactApp/eslint-script.sh'
-                sh 'commit -am "Added lint files"'
+                sh 'git commit -am "Added lint files"'
             }
         }
         stage ('Replace Configurations') {
