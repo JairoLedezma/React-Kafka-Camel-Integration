@@ -28,6 +28,7 @@ pipeline {
         }
         stage ('Lint Analysis with EsLint') {
             steps {
+                sh 'chmod +x ./ReactApp/eslint-script.sh'
                 sh './ReactApp/eslint-script.sh'
             }
         }
