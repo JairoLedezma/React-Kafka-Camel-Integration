@@ -32,6 +32,7 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                            //sh 'eslint --init'
+                           sh "chmod +x -R ${env.WORKSPACE}"
                            sh './ReactApp/eslint-script.sh'
                         }
                     }
