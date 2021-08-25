@@ -72,7 +72,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 
-##-------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------
 ## Lint stage
 
 The lint stage is called after the Create configurations stage. This saves the output of the eslint operation to a file called eslint-report. This can be found at ReactApp/reports/
