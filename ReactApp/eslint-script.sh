@@ -2,6 +2,6 @@
 
 cd /{JENKINS HOME DIRECTORY}/workspace/node-lint-pipeline
 
-eslint --no-color --format json --ext .ejs,.js > ./ReactApp/reports/eslint-report ./
+eslint --no-color --format json --ext .ejs,.js > ./ReactApp/reports/eslint-report.xml ./
 
 echo $? > /dev/null
