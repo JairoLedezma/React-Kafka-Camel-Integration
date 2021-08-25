@@ -32,7 +32,6 @@ pipeline {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
                            sh 'eslint --init'
-                           sh 'eslint --format json --ext .ejs,.js --output-file /ReactApp/reports/eslint-report ./'
                            sh '/ReactApp/eslint-script.sh'
                         }
                     }
