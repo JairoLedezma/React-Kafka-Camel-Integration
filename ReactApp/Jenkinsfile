@@ -31,6 +31,7 @@ pipeline {
                 script {
                     openshift.withCluster( CLUSTER_NAME ) {
                         openshift.withProject( PROJECT_NAME ){
+                           sh 'npm start'
                            sh 'npm run lint'
                            //sh "chmod +x ./ReactApp/eslint-script.sh"
                            //sh 'eslint -c /Users/jairoledezma/.jenkins/workspace/lint-react/ReactApp/.eslintrc.json -f checkstyle ./ReactApp > eslint.xml'
